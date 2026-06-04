@@ -115,6 +115,9 @@ def delete_pool_contribution(contribution_id: int, current_user: models.User = D
     if not db_contribution:
         raise HTTPException(status_code=404, detail="Pool contribution not found")
         
+    if db_contribution.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the person assigned to this contribution can delete it")
+        
     db.delete(db_contribution)
     db.commit()
     return None

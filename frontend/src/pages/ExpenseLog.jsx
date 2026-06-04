@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Filter } from 'lucide-react';
+import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Filter, Lock } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -558,13 +558,21 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                       {exp.is_shared ? '✅' : '👤'}
                     </td>
                     <td style={{ padding: '12px 8px', textAlign: 'right' }}>
-                      <button 
-                        onClick={() => handleDelete(exp.id)}
-                        style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
-                        className="btn-trash-hover"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {isOffline || String(exp.user_id) === String(user?.id) ? (
+                        <button 
+                          onClick={() => handleDelete(exp.id)}
+                          style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
+                          className="btn-trash-hover"
+                          title="Delete Expense"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      ) : (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--text-muted)', fontSize: '11px', background: 'rgba(255,255,255,0.02)', padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.05)', cursor: 'default' }} title="Read-only: Logged by another member">
+                          <Lock size={12} style={{ opacity: 0.6 }} />
+                          <span>Read-only</span>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Landmark, TrendingUp, AlertTriangle, Sparkles, Check, Plus, Trash2 } from 'lucide-react';
+import { Landmark, TrendingUp, AlertTriangle, Sparkles, Check, Plus, Trash2, Lock } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -414,13 +414,19 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <strong style={{ fontSize: '14px', color: 'var(--color-primary)' }}>₹{item.amount.toLocaleString('en-IN')}</strong>
-                      <button 
-                        onClick={() => handleDeleteContribution(item.id)}
-                        style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', padding: '2px', cursor: 'pointer' }}
-                        title="Delete Contribution"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {isOffline || String(item.user_id) === String(user?.id) ? (
+                        <button 
+                          onClick={() => handleDeleteContribution(item.id)}
+                          style={{ background: 'transparent', color: 'var(--color-danger)', border: 'none', padding: '2px', cursor: 'pointer' }}
+                          title="Delete Contribution"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      ) : (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--text-muted)' }} title="Read-only: Contributed by another member">
+                          <Lock size={12} style={{ opacity: 0.6 }} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))

@@ -134,6 +134,9 @@ def update_expense(expense_id: int, expense_data: schemas.ExpenseUpdate, current
     if not db_expense:
         raise HTTPException(status_code=404, detail="Expense not found in your room")
         
+    if db_expense.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the person who entered the expense can edit it")
+        
     for var, value in vars(expense_data).items():
         if value is not None:
             setattr(db_expense, var, value)
@@ -154,6 +157,9 @@ def delete_expense(expense_id: int, current_user: models.User = Depends(auth.get
     
     if not db_expense:
         raise HTTPException(status_code=404, detail="Expense not found in your room")
+        
+    if db_expense.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the person who entered the expense can delete it")
         
     db.delete(db_expense)
     db.commit()
