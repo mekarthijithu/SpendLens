@@ -7,6 +7,15 @@ from .routers import auth, expenses, budgets, analytics, notifications
 # Initialize tables
 Base.metadata.create_all(bind=engine)
 
+# Auto-seed database if empty on startup
+from .database import SessionLocal
+from .seed import seed_database_if_empty
+db = SessionLocal()
+try:
+    seed_database_if_empty(db)
+finally:
+    db.close()
+
 app = FastAPI(
     title="SpendLens API",
     description="Financial intelligence and collaborative expense tracking for rooms/households.",
