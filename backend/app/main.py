@@ -58,6 +58,56 @@ def read_root():
         "version": "1.1.0",
         "endpoints": [
             "/api/auth/register", "/api/auth/login", "/api/auth/create-room", "/api/auth/join-room",
-            "/api/expenses/", "/api/budgets/", "/api/analytics/summary", "/api/notifications/"
+            "/api/expenses/", "/api/budgets/", "/api/analytics/summary", "/api/notifications/",
+            "/api/admin/clear-db"
         ]
     }
+
+@app.get("/api/admin/clear-db")
+def clear_db_route():
+    from .database import engine, Base, SessionLocal
+    from . import models, auth
+    
+    db = SessionLocal()
+    try:
+        print("Resetting database via admin endpoint...")
+        # Drop and recreate all tables
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
+        
+        # Re-create room
+        room = models.Room(
+            name="B6",
+            invite_code="LENS99",
+            created_by=1
+        )
+        db.add(room)
+        db.commit()
+        db.refresh(room)
+        
+        # Re-create users
+        users_data = [
+            {"name": "Akhil", "email": "akhil@spendlens.com", "upi_id": "akhil@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Akhil"},
+            {"name": "Vikas", "email": "vikas@spendlens.com", "upi_id": "vikas@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Vikas"},
+            {"name": "Jithu", "email": "jithu@spendlens.com", "upi_id": "jithu@oksbi", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jithu"},
+            {"name": "Bhanu", "email": "bhanu@spendlens.com", "upi_id": "bhanu@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Bhanu"},
+            {"name": "Jagan", "email": "jagan@spendlens.com", "upi_id": "jagan@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jagan"}
+        ]
+        
+        for ud in users_data:
+            hashed_password = auth.get_password_hash("password123")
+            db_user = models.User(
+                name=ud["name"],
+                email=ud["email"],
+                hashed_password=hashed_password,
+                room_id=room.id,
+                upi_id=ud["upi_id"],
+                avatar=ud["avatar"]
+            )
+            db.add(db_user)
+        db.commit()
+        return {"status": "success", "message": "Database reset completed. 5 clean user profiles created."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
