@@ -65,13 +65,18 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
     }
   };
 
+  // Load contributions
   useEffect(() => {
     fetchContributions();
-    // Default select current user or first member if members exist
-    if (room?.members?.length > 0) {
-      setSelectedUserId(String(user?.id || room.members[0].id));
-    }
   }, [token, isOffline, room?.id]);
+
+  // Set default selected user when room members or current user details are available
+  useEffect(() => {
+    if (room?.members?.length > 0) {
+      const hasUser = room.members.some(m => String(m.id) === String(user?.id));
+      setSelectedUserId(String(hasUser ? user.id : room.members[0].id));
+    }
+  }, [room?.members, user?.id]);
 
   // Calculate starting pool as the sum of contributions
   const startingPool = contributions.reduce((sum, c) => sum + (c.amount || 0), 0);
@@ -98,17 +103,18 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
 
   const handleAddContribution = async (e) => {
     e.preventDefault();
-    if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0 || !selectedUserId) return;
+    const userIdVal = selectedUserId || (room?.members?.length > 0 ? String(room.members[0].id) : '');
+    if (!amountInput || isNaN(amountInput) || parseFloat(amountInput) <= 0 || !userIdVal) return;
     
     setSubmitting(true);
     const amount = parseFloat(amountInput);
     const targetMonth = getMonthStrFromName(selectedMonthName);
 
     if (isOffline) {
-      const selectedMember = room?.members?.find(m => String(m.id) === selectedUserId) || { name: 'Offline Member' };
+      const selectedMember = room?.members?.find(m => String(m.id) === userIdVal) || { name: 'Offline Member' };
       const newContribution = {
         id: Date.now(),
-        user_id: parseInt(selectedUserId),
+        user_id: parseInt(userIdVal),
         user_name: selectedMember.name,
         amount,
         month: targetMonth,
@@ -132,7 +138,7 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: parseInt(selectedUserId),
+          user_id: parseInt(userIdVal),
           amount,
           month: targetMonth
         })
@@ -188,7 +194,7 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
           {isAdding ? (
             <form onSubmit={handleAddContribution} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <select 
-                value={selectedUserId} 
+                value={selectedUserId || (room?.members?.length > 0 ? String(room.members[0].id) : '')} 
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 style={{ padding: '8px 12px', fontSize: '13px', width: '150px' }}
                 required
