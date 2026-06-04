@@ -4,14 +4,14 @@ import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Fil
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const DEFAULT_CATEGORIES = [
-  'vegetables', 'non-veg', 'online delivery', 'rent', 'household supplies'
+  'vegetables', 'non-veg', 'eggs', 'water', 'rent', 'household supplies'
 ];
 
 const getLearnedCategories = (expensesList) => {
   const customCounts = {};
   (expensesList || []).forEach(exp => {
     const cat = (exp.category || '').toLowerCase().trim();
-    if (cat && !['vegetables', 'non-veg', 'online delivery', 'rent', 'household supplies', 'other'].includes(cat)) {
+    if (cat && !['vegetables', 'non-veg', 'eggs', 'water', 'rent', 'household supplies', 'other'].includes(cat)) {
       if (!customCounts[cat]) {
         customCounts[cat] = {
           count: 0,
@@ -49,10 +49,11 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
 
   // Form State
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('online delivery');
+  const [category, setCategory] = useState('eggs');
   const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [vendor, setVendor] = useState('');
   const [paymentMode, setPaymentMode] = useState('UPI');
+  const [deliveryType, setDeliveryType] = useState('offline');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [isShared, setIsShared] = useState(true);
   const [tags, setTags] = useState('');
@@ -119,6 +120,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         category: finalCategory,
         vendor: vendor || 'General Vendor',
         payment_mode: paymentMode,
+        delivery_type: deliveryType,
         date,
         is_shared: isShared,
         tags: tagList,
@@ -130,7 +132,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
       setTags('');
       setNotes('');
       setCustomCategoryInput('');
-      setCategory('online delivery');
+      setCategory('eggs');
+      setDeliveryType('offline');
       setIsShared(true);
       setSubmitting(false);
       return;
@@ -148,6 +151,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
           category: finalCategory,
           vendor: vendor || 'General Vendor',
           payment_mode: paymentMode,
+          delivery_type: deliveryType,
           date,
           is_shared: isShared,
           tags: tagList,
@@ -162,7 +166,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         setTags('');
         setNotes('');
         setCustomCategoryInput('');
-        setCategory('online delivery');
+        setCategory('eggs');
+        setDeliveryType('offline');
         setIsShared(true);
         handleFetchExpenses();
         onRefresh();
@@ -218,6 +223,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         if (data.category && dropdownCategories.includes(data.category)) setCategory(data.category);
         if (data.date) setDate(data.date);
         if (data.payment_mode) setPaymentMode(data.payment_mode);
+        if (data.delivery_type) setDeliveryType(data.delivery_type);
         
         setOcrMessage(`Successfully extracted: ₹${data.amount} from ${data.vendor} (${Math.round(data.confidence * 100)}% confidence).`);
       } else {
@@ -279,7 +285,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
   });
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: '32px' }}>
+    <div className="responsive-grid-2">
       
       {/* Left side: Logging Forms */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -324,7 +330,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               <div>
                 <label>Vendor / Payee *</label>
                 <input 
@@ -342,6 +348,14 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                   {PAYMENT_MODES.map(mode => (
                     <option key={mode} value={mode}>{mode}</option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <label>Purchase Type</label>
+                <select value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)}>
+                  <option value="online delivery">Online delivery</option>
+                  <option value="offline">Offline</option>
                 </select>
               </div>
             </div>
@@ -517,6 +531,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                   <th style={{ padding: '12px 8px' }}>Amount</th>
                   <th style={{ padding: '12px 8px' }}>Paid By</th>
                   <th style={{ padding: '12px 8px' }}>Mode</th>
+                  <th style={{ padding: '12px 8px' }}>Type</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>Shared?</th>
                   <th style={{ padding: '12px 8px', textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -532,8 +547,13 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                     </td>
                     <td style={{ padding: '12px 8px', fontWeight: 500 }}>{exp.vendor}</td>
                     <td style={{ padding: '12px 8px', fontWeight: 'bold' }}>₹{(exp.amount || 0).toFixed(2)}</td>
-                    <td style={{ padding: '12px 8px' }}>{exp.user_name}</td>
+                     <td style={{ padding: '12px 8px' }}>{exp.user_name}</td>
                     <td style={{ padding: '12px 8px', color: 'var(--text-secondary)' }}>{exp.payment_mode}</td>
+                    <td style={{ padding: '12px 8px', textTransform: 'capitalize' }}>
+                      <span style={{ fontSize: '11px', color: exp.delivery_type === 'online delivery' ? 'var(--color-info)' : 'var(--text-muted)' }}>
+                        {exp.delivery_type === 'online delivery' ? 'Online' : 'Offline'}
+                      </span>
+                    </td>
                     <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                       {exp.is_shared ? '✅' : '👤'}
                     </td>

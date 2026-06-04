@@ -84,7 +84,8 @@ function Dashboard({ analytics, token, user, onRefresh }) {
       "non-veg": 3000,
       fruits: 1000,
       groceries: 6000,
-      "online delivery": 3000,
+      eggs: 2000,
+      water: 1000,
       utilities: 2500,
       rent: 20000,
       "household supplies": 1500,
@@ -273,13 +274,13 @@ function Dashboard({ analytics, token, user, onRefresh }) {
                   <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>₹5,500 Seafood Mandi purchase by Jithendra is 9x typical category average (Isolation Forest flagged).</p>
                 </div>
               ) : null}
-              {(category_share || []).some(c => c.category === 'online delivery' && c.amount > 4000) ? (
+              {(category_share || []).some(c => c.category === 'eggs' && c.amount > 4000) ? (
                 <div style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.08)', borderLeft: '3px solid var(--color-danger)', borderRadius: 'var(--radius-sm)' }}>
-                  <p style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '4px' }}>Weekly delivery spike</p>
-                  <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Swiggy Gourmet spending is 3x higher than room weekend average.</p>
+                  <p style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '4px' }}>Weekly egg budget spike</p>
+                  <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Swiggy Gourmet egg spending is 3x higher than room weekend average.</p>
                 </div>
               ) : null}
-              {!((category_share || []).some(c => c.category === 'non-veg' && c.amount > 5000) || (category_share || []).some(c => c.category === 'online delivery' && c.amount > 4000)) && (
+              {!((category_share || []).some(c => c.category === 'non-veg' && c.amount > 5000) || (category_share || []).some(c => c.category === 'eggs' && c.amount > 4000)) && (
                 <p style={{ color: 'var(--text-muted)', fontSize: '12px', textAlign: 'center', padding: '12px 0' }}>No spend spikes detected in recent logs.</p>
               )}
             </div>

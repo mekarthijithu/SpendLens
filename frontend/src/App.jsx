@@ -52,6 +52,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [room, setRoom] = useState(null);
   const [activePage, setActivePage] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [analytics, setAnalytics] = useState(null);
@@ -442,13 +443,21 @@ function App() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div className="app-container" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       {/* Background Orbs */}
       <div className="blur-circle circle-1" style={{ opacity: 0.08 }}></div>
       <div className="blur-circle circle-2" style={{ opacity: 0.08 }}></div>
 
+      {/* Mobile Sidebar Overlay Backdrop */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      ></div>
+
       {/* Sidebar Navigation */}
-      <aside className="glass-panel" style={{ width: '260px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border-color)', padding: '24px 16px', position: 'sticky', top: 0, height: '100vh', zIndex: 10 }}>
+      <aside 
+        className={`glass-panel sidebar-navigation ${isSidebarOpen ? 'open' : ''}`}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '36px', padding: '0 8px' }}>
           <span style={{ fontSize: '24px' }}>🔎</span>
           <div>
@@ -459,7 +468,7 @@ function App() {
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <button 
-            onClick={() => setActivePage('dashboard')} 
+            onClick={() => { setActivePage('dashboard'); setIsSidebarOpen(false); }} 
             className={`btn-secondary`}
             style={{ 
               display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: 'var(--radius-sm)',
@@ -472,7 +481,7 @@ function App() {
           </button>
           
           <button 
-            onClick={() => setActivePage('expenses')} 
+            onClick={() => { setActivePage('expenses'); setIsSidebarOpen(false); }} 
             className={`btn-secondary`}
             style={{ 
               display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: 'var(--radius-sm)',
@@ -485,7 +494,7 @@ function App() {
           </button>
 
           <button 
-            onClick={() => setActivePage('analytics')} 
+            onClick={() => { setActivePage('analytics'); setIsSidebarOpen(false); }} 
             className={`btn-secondary`}
             style={{ 
               display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: 'var(--radius-sm)',
@@ -498,7 +507,7 @@ function App() {
           </button>
 
           <button 
-            onClick={() => setActivePage('budgetPool')} 
+            onClick={() => { setActivePage('budgetPool'); setIsSidebarOpen(false); }} 
             className={`btn-secondary`}
             style={{ 
               display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: 'var(--radius-sm)',
@@ -523,7 +532,7 @@ function App() {
             </div>
             <button
               id="logout-button"
-              onClick={handleLogout}
+              onClick={() => { handleLogout(); setIsSidebarOpen(false); }}
               className="btn-secondary"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
@@ -549,10 +558,16 @@ function App() {
       </aside>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="main-content-area" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top Header */}
-        <header className="glass-panel" style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 9 }}>
+        <header className="glass-panel app-header" style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 9 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu size={20} />
+            </button>
             <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>{room?.name || 'Household'}</h1>
             {room && (
               <div 
@@ -615,7 +630,7 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {(room?.members || []).slice(0, 3).map((m, idx) => (
                 <img 
-                  key={m.id} 
+                   key={m.id} 
                   src={m.avatar} 
                   alt={m.name} 
                   title={m.name}
@@ -641,11 +656,19 @@ function App() {
         </header>
 
         {/* Dynamic Page Views */}
-        <main style={{ padding: '32px', flex: 1, overflowY: 'auto' }}>
+        <main className="app-main-content" style={{ flex: 1, overflowY: 'auto' }}>
           {activePage === 'dashboard' && <Dashboard analytics={analytics} token={token} user={user} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} />}
           {activePage === 'expenses' && <ExpenseLog token={token} room={room} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} user={user} expenses={expenses} setExpenses={setExpenses} fetchExpenses={fetchExpenses} />}
           {activePage === 'analytics' && <Analytics analytics={analytics} token={token} isOffline={isOffline} />}
-          {activePage === 'budgetPool' && <BudgetPool expenses={expenses} isOffline={isOffline} />}
+          {activePage === 'budgetPool' && (
+            <BudgetPool 
+              expenses={expenses} 
+              isOffline={isOffline} 
+              room={room} 
+              token={token} 
+              user={user} 
+            />
+          )}
         </main>
       </div>
     </div>

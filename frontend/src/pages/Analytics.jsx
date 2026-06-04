@@ -130,7 +130,7 @@ function Analytics({ analytics, token }) {
       </div>
 
       {/* Main Charts Split */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '32px' }}>
+      <div className="responsive-grid-equal">
         
         {/* Pie Chart: Category share */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '420px' }}>

@@ -47,7 +47,8 @@ def create_expense(expense_data: schemas.ExpenseCreate, current_user: models.Use
         date=expense_data.date,
         is_shared=expense_data.is_shared,
         tags=expense_data.tags,
-        notes=expense_data.notes
+        notes=expense_data.notes,
+        delivery_type=expense_data.delivery_type
     )
     db.add(db_expense)
     db.commit()
@@ -172,18 +173,22 @@ def ocr_receipt(file: UploadFile = File(...)):
     category = "groceries"
     date = datetime.datetime.utcnow().strftime("%Y-%m-%d")
     payment_mode = "UPI"
+    delivery_type = "offline"
     confidence = 0.95
     
     # Heuristics based on filename if present (e.g. blinkit_vegetables_230.png)
     if "blinkit" in filename:
         vendor = "Blinkit"
         category = "vegetables"
+        delivery_type = "online delivery"
     elif "zepto" in filename:
         vendor = "Zepto"
         category = "groceries"
+        delivery_type = "online delivery"
     elif "swiggy" in filename or "zomato" in filename:
         vendor = "Swiggy"
-        category = "online delivery"
+        category = "eggs"
+        delivery_type = "online delivery"
     elif "electric" in filename or "power" in filename:
         vendor = "State Electricity Board"
         category = "utilities"
@@ -208,6 +213,7 @@ def ocr_receipt(file: UploadFile = File(...)):
         "category": category,
         "date": date,
         "payment_mode": payment_mode,
+        "delivery_type": delivery_type,
         "confidence": confidence
     }
 
@@ -259,7 +265,8 @@ def import_csv(file: UploadFile = File(...), current_user: models.User = Depends
             date=final_date,
             is_shared=True,
             tags=["csv-imported"],
-            notes="Imported via bulk CSV upload"
+            notes="Imported via bulk CSV upload",
+            delivery_type="offline"
         )
         db.add(db_expense)
         imported_count += 1

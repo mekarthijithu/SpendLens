@@ -48,6 +48,7 @@ class Expense(Base):
     is_shared = Column(Boolean, default=True)
     tags = Column(JSON, default=[]) # List of string tags
     notes = Column(String, nullable=True)
+    delivery_type = Column(String, default="offline", nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     # Relationships
@@ -65,6 +66,20 @@ class Budget(Base):
 
     # Relationships
     room = relationship("Room", back_populates="budgets")
+
+class PoolContribution(Base):
+    __tablename__ = "pool_contributions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    room_id = Column(Integer, ForeignKey("rooms.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    amount = Column(Float, nullable=False)
+    month = Column(String, nullable=False) # Format: YYYY-MM
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    # Relationships
+    user = relationship("User")
+    room = relationship("Room")
 
 class Prediction(Base):
     __tablename__ = "predictions"

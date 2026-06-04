@@ -64,7 +64,8 @@ def seed_database():
         {"category": "vegetables", "limit": 1500.0},
         {"category": "non-veg", "limit": 3000.0},
         {"category": "groceries", "limit": 6000.0},
-        {"category": "online delivery", "limit": 3000.0},
+        {"category": "eggs", "limit": 2000.0},
+        {"category": "water", "limit": 1000.0},
         {"category": "rent", "limit": 20000.0},
         {"category": "household supplies", "limit": 1500.0}
     ]
@@ -87,7 +88,8 @@ def seed_database():
         "vegetables": ["Local Mandi", "Zepto", "Blinkit", "Reliance Fresh"],
         "non-veg": ["Licious", "Meat Shop", "FreshToHome", "Local Fish Market"],
         "groceries": ["D-Mart", "Supermarket", "BigBasket", "Kirana Shop"],
-        "online delivery": ["Zomato", "Swiggy", "Zepto", "Blinkit", "Eatsure"],
+        "eggs": ["Egg Store", "Local Grocery", "Zepto", "Blinkit"],
+        "water": ["Bisleri Distributor", "Local Shop", "Can Vendor"],
         "rent": ["House Owner Trust"],
         "household supplies": ["Amazon", "D-Mart", "Blinkit"]
     }
@@ -116,7 +118,8 @@ def seed_database():
             date=f"{month_str}-01",
             is_shared=True,
             tags=["rent", "fixed-cost"],
-            notes=f"Monthly house rent for {month_str}"
+            notes=f"Monthly house rent for {month_str}",
+            delivery_type="offline"
         ))
         expense_count += 1
         
@@ -131,9 +134,12 @@ def seed_database():
             if category in ["vegetables"]:
                 frequencies = 6  # ~weekly/bi-weekly
                 base_amount_range = (80, 200)
-            elif category in ["online delivery"]:
+            elif category in ["eggs"]:
                 frequencies = 4
-                base_amount_range = (250, 750)
+                base_amount_range = (150, 400)
+            elif category in ["water"]:
+                frequencies = 5
+                base_amount_range = (50, 150)
             elif category == "groceries":
                 frequencies = 2  # bulk
                 base_amount_range = (1200, 2800)
@@ -158,7 +164,9 @@ def seed_database():
                 
                 # Tags
                 tags = [category]
-                if "zepto" in vendor.lower() or "blinkit" in vendor.lower():
+                is_online = any(onl in vendor.lower() for onl in ["zepto", "blinkit", "zomato", "swiggy", "eatsure", "bigbasket", "licious", "freshtohome", "amazon"])
+                delivery_type = "online delivery" if is_online else "offline"
+                if is_online:
                     tags.append("delivery")
                 if amount > 1000:
                     tags.append("bulk")
@@ -173,7 +181,8 @@ def seed_database():
                     date=date_str,
                     is_shared=is_shared,
                     tags=tags,
-                    notes=f"Log item for {category} at {vendor}"
+                    notes=f"Log item for {category} at {vendor}",
+                    delivery_type=delivery_type
                 ))
                 expense_count += 1
                 
@@ -189,22 +198,24 @@ def seed_database():
         date=f"{current_month_str}-15",
         is_shared=True,
         tags=["party", "seafood", "anomaly"],
-        notes="Spontaneous crab and lobster dinner party for the entire house!"
+        notes="Spontaneous crab and lobster dinner party for the entire house!",
+        delivery_type="offline"
     ))
     expense_count += 1
     
-    # Vikas spends ₹4,200 on online delivery in one weekend
+    # Vikas spends ₹4,200 on eggs in one weekend
     db.add(models.Expense(
         user_id=users[1].id, # Vikas
         room_id=room.id,
         amount=4200.0,
-        category="online delivery",
+        category="eggs",
         vendor="Swiggy Gourmet",
         payment_mode="UPI",
         date=f"{current_month_str}-20",
         is_shared=True,
         tags=["weekend-party"],
-        notes="Birthday treat ordering from premium restaurant"
+        notes="Birthday treat ordering from premium restaurant",
+        delivery_type="online delivery"
     ))
     expense_count += 1
     
@@ -228,7 +239,7 @@ def seed_database():
         {
             "user_id": users[0].id,
             "type": "budget",
-            "message": f"You have spent 80% of your 'online delivery' budget (₹2,450 of ₹3,000) this month.",
+            "message": f"You have spent 80% of your 'eggs' budget (₹1,650 of ₹2,000) this month.",
             "read": False
         },
         {

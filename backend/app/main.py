@@ -7,6 +7,19 @@ from .routers import auth, expenses, budgets, analytics, notifications
 # Initialize tables
 Base.metadata.create_all(bind=engine)
 
+# Run a dynamic schema patch to add delivery_type to expenses table if not exists
+from sqlalchemy import text
+db_conn = engine.connect()
+try:
+    db_conn.execute(text("ALTER TABLE expenses ADD COLUMN delivery_type VARCHAR DEFAULT 'offline'"))
+    db_conn.commit()
+    print("Database migration: Added delivery_type column to expenses table.")
+except Exception as e:
+    # Column probably already exists or table doesn't exist yet
+    pass
+finally:
+    db_conn.close()
+
 # Auto-seed database if empty on startup
 from .database import SessionLocal
 from .seed import seed_database_if_empty

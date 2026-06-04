@@ -70,6 +70,7 @@ class ExpenseBase(BaseModel):
     is_shared: bool = True
     tags: List[str] = []
     notes: Optional[str] = None
+    delivery_type: Optional[str] = "offline"
 
 class ExpenseCreate(ExpenseBase):
     pass
@@ -83,6 +84,7 @@ class ExpenseUpdate(BaseModel):
     is_shared: Optional[bool] = None
     tags: Optional[List[str]] = None
     notes: Optional[str] = None
+    delivery_type: Optional[str] = None
 
 class ExpenseResponse(ExpenseBase):
     id: int
@@ -107,6 +109,24 @@ class BudgetCreate(BudgetBase):
 class BudgetResponse(BudgetBase):
     id: int
     room_id: int
+
+    class Config:
+        from_attributes = True
+
+# Pool Contribution Schemas
+class PoolContributionBase(BaseModel):
+    user_id: int
+    amount: float
+    month: str  # YYYY-MM
+
+class PoolContributionCreate(PoolContributionBase):
+    pass
+
+class PoolContributionResponse(PoolContributionBase):
+    id: int
+    room_id: int
+    created_at: datetime
+    user_name: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -145,4 +165,5 @@ class OCRResponse(BaseModel):
     category: Optional[str] = None
     date: Optional[str] = None
     payment_mode: Optional[str] = None
+    delivery_type: Optional[str] = None
     confidence: float
