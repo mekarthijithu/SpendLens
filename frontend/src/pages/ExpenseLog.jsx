@@ -49,7 +49,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
 
   // Form State
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('eggs');
+  const [category, setCategory] = useState('vegetables');
   const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [vendor, setVendor] = useState('');
   const [paymentMode, setPaymentMode] = useState('UPI');
@@ -132,7 +132,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
       setTags('');
       setNotes('');
       setCustomCategoryInput('');
-      setCategory('eggs');
+      setCategory('vegetables');
       setDeliveryType('offline');
       setIsShared(true);
       setSubmitting(false);
@@ -166,7 +166,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         setTags('');
         setNotes('');
         setCustomCategoryInput('');
-        setCategory('eggs');
+        setCategory('vegetables');
         setDeliveryType('offline');
         setIsShared(true);
         handleFetchExpenses();
@@ -332,12 +332,11 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               <div>
-                <label>Vendor / Payee *</label>
+                <label>Vendor / Payee</label>
                 <input 
                   type="text" 
                   value={vendor} 
                   onChange={(e) => setVendor(e.target.value)} 
-                  required 
                   placeholder="e.g. Zepto, Amul Store, BESCOM" 
                 />
               </div>
@@ -354,8 +353,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               <div>
                 <label>Purchase Type</label>
                 <select value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)}>
-                  <option value="online delivery">Online delivery</option>
                   <option value="offline">Offline</option>
+                  <option value="online delivery">Online delivery</option>
                 </select>
               </div>
             </div>

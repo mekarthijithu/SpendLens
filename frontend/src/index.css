@@ -395,3 +395,46 @@ button {
     display: block;
   }
 }
+
+/* Optimize metrics grid layout for mobile/tablet screens to be side-by-side */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .metrics-grid .card {
+    padding: 12px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .metrics-grid .card > div:first-child {
+    padding: 8px !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  
+  .metrics-grid .card svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  .metrics-grid .card h3 {
+    font-size: 16px !important;
+    margin: 2px 0 0 0 !important;
+  }
+  
+  .metrics-grid .card span {
+    font-size: 10px !important;
+  }
+}
