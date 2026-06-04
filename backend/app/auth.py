@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -8,8 +9,8 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from . import models
 
-# SECRET_KEY for JWT signature (normally an env var)
-SECRET_KEY = "spend-lens-super-secret-key-for-local-development"
+# SECRET_KEY for JWT signature — reads from env var in production, fallback for local dev
+SECRET_KEY = os.getenv("SECRET_KEY", "spend-lens-super-secret-key-for-local-development")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30  # 30 days for local development convenience
 

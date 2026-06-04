@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
@@ -12,13 +13,18 @@ app = FastAPI(
     version="1.1.0"
 )
 
-# CORS configuration to allow local frontend access
+# CORS configuration to allow frontend access
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
     "http://localhost:8000"
 ]
+
+# Allow adding production frontend URLs via environment variable
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.extend([url.strip() for url in frontend_url.split(",") if url.strip()])
 
 app.add_middleware(
     CORSMiddleware,

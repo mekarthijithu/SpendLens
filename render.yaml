@@ -1,0 +1,37 @@
+# SpendLens Render Blueprint Configuration
+# This file enables one-click deployment of the entire SpendLens stack on Render.
+
+databases:
+  - name: spendlens-db
+    databaseName: spendlens
+    user: spendlens_user
+    plan: free
+
+services:
+  # 1. FastAPI Python Backend Web Service
+  - type: web
+    name: spendlens-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn app.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: spendlens-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true  # Render auto-generates a secure random string
+      - key: FRONTEND_URL
+        sync: false # Set this to the frontend static site URL after deployment (for CORS)
+      - key: PORT
+        value: 8080
+
+  # 2. Vite React Static Frontend Site
+  - type: static
+    name: spendlens-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_BASE
+        sync: false # User will set this to the backend's public URL (https://spendlens-backend.onrender.com)
+

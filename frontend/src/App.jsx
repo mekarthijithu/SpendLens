@@ -5,7 +5,7 @@ import ExpenseLog from './pages/ExpenseLog';
 import Analytics from './pages/Analytics';
 import BudgetPool from './pages/BudgetPool';
 
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const MEMBERS = [
   { name: 'Akhil', email: 'akhil@spendlens.com', color: '#10b981', emoji: '🟢' },

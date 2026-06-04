@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Filter } from 'lucide-react';
 
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const DEFAULT_CATEGORIES = [
   'vegetables', 'non-veg', 'online delivery', 'rent', 'household supplies'

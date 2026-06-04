@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IndianRupee, AlertTriangle, Lightbulb, TrendingUp, Sparkles, Plus, Check, Users } from 'lucide-react';
 
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 function Dashboard({ analytics, token, user, onRefresh }) {
   const [editingBudgetCategory, setEditingBudgetCategory] = useState(null);

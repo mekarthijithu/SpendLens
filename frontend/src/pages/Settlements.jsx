@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Landmark, ArrowRight, Download, Check, Copy } from 'lucide-react';
 
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 function Settlements({ analytics, token, onRefresh }) {
   const [copiedUpi, setCopiedUpi] = useState(null);
