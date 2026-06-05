@@ -771,50 +771,56 @@ function App() {
         {/* Mobile horizontal tab bar (visible only on mobile via index.css) */}
         <div className="mobile-nav-tabs" style={{
           display: 'none',
-          background: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid var(--border-color)',
-          padding: '8px 16px',
-          overflowX: 'auto',
-          gap: '8px',
-          whiteSpace: 'nowrap',
-          zIndex: 8,
-          position: 'sticky',
-          top: '70px',
+          background: 'rgba(15, 23, 42, 0.98)',
+          backdropFilter: 'blur(12px)',
+          borderTop: '1px solid var(--border-color)',
+          padding: '6px 10px',
+          gap: '4px',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.45)',
+          justifyContent: 'space-around',
+          alignItems: 'center'
         }}>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: '📊' },
             { id: 'expenses', label: 'Expenses', icon: '📄' },
             { id: 'analytics', label: 'Intelligence', icon: '💡' },
-            { id: 'budgetPool', label: 'Monthly Pool', icon: '🏦' },
-            { id: 'settlements', label: 'Settlements', icon: '🤝' }
+            { id: 'budgetPool', label: 'Pool', icon: '🏦' },
+            { id: 'settlements', label: 'Settlement', icon: '🤝' }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActivePage(tab.id)}
               style={{
-                background: activePage === tab.id ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                border: activePage === tab.id ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
-                color: activePage === tab.id ? '#fff' : 'var(--text-secondary)',
-                borderRadius: '20px',
-                padding: '6px 14px',
-                fontSize: '12px',
-                display: 'inline-flex',
+                background: 'transparent',
+                border: 'none',
+                color: activePage === tab.id ? 'var(--color-secondary)' : 'var(--text-secondary)',
+                padding: '6px 12px',
+                fontSize: '10px',
+                display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                gap: '6px',
+                justifyContent: 'center',
+                gap: '4px',
                 fontFamily: 'var(--font-display)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                flexShrink: 0
+                flex: 1,
+                minWidth: 0
               }}
             >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
+              <span style={{ fontSize: '20px' }}>{tab.icon}</span>
+              <span style={{ fontWeight: activePage === tab.id ? 'bold' : '500' }}>{tab.label}</span>
             </button>
           ))}
         </div>
+
 
         {/* Dynamic Page Views */}
         <main className="app-main-content" style={{ flex: 1, overflowY: 'auto' }}>

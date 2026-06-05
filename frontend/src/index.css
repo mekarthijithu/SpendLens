@@ -394,6 +394,10 @@ button {
   .sidebar-overlay.open {
     display: block;
   }
+  
+  .app-main-content {
+    padding-bottom: 85px !important;
+  }
 }
 
 /* Optimize metrics grid layout for mobile/tablet screens to be side-by-side */
