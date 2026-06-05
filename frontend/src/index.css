@@ -438,3 +438,10 @@ button {
     font-size: 10px !important;
   }
 }
+
+@media (max-width: 768px) {
+  .mobile-nav-tabs {
+    display: flex !important;
+  }
+}
+

@@ -84,21 +84,34 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
   // Filter expenses that are in the current month
   const currentMonthExpenses = expenses.filter(exp => (exp.date || '').slice(0, 7) === currentMonthStr);
   const totalSpend = currentMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+  
+  // Exclude fixed Room Rent from predictive day-to-day burn rate calculations
+  const roomRentSpend = currentMonthExpenses
+    .filter(exp => ['rent', 'room rent'].includes((exp.category || '').toLowerCase().trim()))
+    .reduce((sum, exp) => sum + (exp.amount || 0), 0);
+  const nonRentSpend = totalSpend - roomRentSpend;
+  
   const remainingAmount = startingPool - totalSpend;
+  const effectiveStartingPool = Math.max(0, startingPool - roomRentSpend);
   const pctUsed = startingPool > 0 ? Math.min(100, Math.round((totalSpend / startingPool) * 100)) : 0;
 
-  // AI Burn Rate Forecasting
+  // AI Burn Rate Forecasting (calculating only from remaining amount left after room rent)
   const today = new Date();
   const currentDay = today.getDate();
   const totalDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const dailyBurnRate = currentDay > 0 ? totalSpend / currentDay : totalSpend;
-  const expectedMonthSpend = dailyBurnRate * totalDays;
-  const expectedRemaining = startingPool - expectedMonthSpend;
-  const isOverBudgetRisk = startingPool > 0 && expectedMonthSpend > startingPool;
   
-  // Calculate run out day
-  const runOutDay = isOverBudgetRisk && dailyBurnRate > 0 && startingPool > 0
-    ? Math.floor(startingPool / dailyBurnRate)
+  // Daily burn rate represents dynamic expenditures only
+  const dailyBurnRate = currentDay > 0 ? nonRentSpend / currentDay : nonRentSpend;
+  const expectedNonRentSpend = dailyBurnRate * totalDays;
+  
+  // Total expected spend includes actual logged rent + expected dynamic spend
+  const expectedMonthSpend = expectedNonRentSpend + roomRentSpend;
+  const expectedRemaining = effectiveStartingPool - expectedNonRentSpend;
+  const isOverBudgetRisk = effectiveStartingPool > 0 && expectedNonRentSpend > effectiveStartingPool;
+  
+  // Calculate run out day of the dynamic pool
+  const runOutDay = isOverBudgetRisk && dailyBurnRate > 0 && effectiveStartingPool > 0
+    ? Math.floor(effectiveStartingPool / dailyBurnRate)
     : null;
 
   const handleAddContribution = async (e) => {
@@ -361,6 +374,11 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
                   {expectedRemaining >= 0 ? '+' : ''}₹{Math.round(expectedRemaining).toLocaleString('en-IN')}
                 </span>
               </div>
+              
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>💡</span>
+                <span>Room Rent (₹{roomRentSpend.toLocaleString('en-IN')}) is treated as a fixed monthly cost and excluded from daily burn rate predictions.</span>
+              </div>
             </div>
 
             {/* AI Warning or Success alert */}
@@ -371,8 +389,8 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
                   <div>
                     <h4 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>Exhaustion Risk Detected</h4>
                     <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: 1.4 }}>
-                      At the current rate of ₹{Math.round(dailyBurnRate)}/day, you will exceed the ₹{startingPool.toLocaleString()} budget pool by ₹{Math.round(Math.abs(expectedRemaining)).toLocaleString()}. 
-                      {runOutDay && ` You are projected to run out of money on Day ${runOutDay} of this month.`}
+                      At the current rate of ₹{Math.round(dailyBurnRate)}/day for dynamic expenditures, you will exceed the remaining pool budget of ₹{effectiveStartingPool.toLocaleString()} by ₹{Math.round(Math.abs(expectedRemaining)).toLocaleString()}. 
+                      {runOutDay && ` You are projected to exhaust your dynamic spending runway on Day ${runOutDay} of this month.`}
                     </p>
                   </div>
                 </>
@@ -382,7 +400,7 @@ function BudgetPool({ expenses, isOffline, room, token, user }) {
                   <div>
                     <h4 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>Healthy Spend Pace</h4>
                     <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', lineHeight: 1.4 }}>
-                      Your spending is under control! At the current pace, you will finish the month with a surplus of approximately ₹{Math.round(expectedRemaining).toLocaleString()}.
+                      Your spending is under control! At the current pace of ₹{Math.round(dailyBurnRate)}/day for dynamic expenditures, you will finish the month with a surplus of approximately ₹{Math.round(expectedRemaining).toLocaleString()} in your dynamic budget pool.
                     </p>
                   </div>
                 </>

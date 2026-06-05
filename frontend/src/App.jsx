@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import ExpenseLog from './pages/ExpenseLog';
 import Analytics from './pages/Analytics';
 import BudgetPool from './pages/BudgetPool';
+import Settlements from './pages/Settlements';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -617,6 +618,19 @@ function App() {
           >
             <Landmark size={18} /> Monthly Pool
           </button>
+
+          <button 
+            onClick={() => { setActivePage('settlements'); setIsSidebarOpen(false); }} 
+            className={`btn-secondary`}
+            style={{ 
+              display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: 'var(--radius-sm)',
+              background: activePage === 'settlements' ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+              border: activePage === 'settlements' ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
+              color: activePage === 'settlements' ? '#fff' : 'var(--text-secondary)'
+            }}
+          >
+            <Users size={18} /> Settlements
+          </button>
         </nav>
 
         {/* User profile footer in sidebar */}
@@ -754,6 +768,54 @@ function App() {
           </div>
         </header>
 
+        {/* Mobile horizontal tab bar (visible only on mobile via index.css) */}
+        <div className="mobile-nav-tabs" style={{
+          display: 'none',
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid var(--border-color)',
+          padding: '8px 16px',
+          overflowX: 'auto',
+          gap: '8px',
+          whiteSpace: 'nowrap',
+          zIndex: 8,
+          position: 'sticky',
+          top: '70px',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          {[
+            { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+            { id: 'expenses', label: 'Expenses', icon: '📄' },
+            { id: 'analytics', label: 'Intelligence', icon: '💡' },
+            { id: 'budgetPool', label: 'Monthly Pool', icon: '🏦' },
+            { id: 'settlements', label: 'Settlements', icon: '🤝' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActivePage(tab.id)}
+              style={{
+                background: activePage === tab.id ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                border: activePage === tab.id ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
+                color: activePage === tab.id ? '#fff' : 'var(--text-secondary)',
+                borderRadius: '20px',
+                padding: '6px 14px',
+                fontSize: '12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontFamily: 'var(--font-display)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flexShrink: 0
+              }}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Dynamic Page Views */}
         <main className="app-main-content" style={{ flex: 1, overflowY: 'auto' }}>
           {activePage === 'dashboard' && <Dashboard analytics={analytics} token={token} user={user} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} />}
@@ -766,6 +828,17 @@ function App() {
               room={room} 
               token={token} 
               user={user} 
+            />
+          )}
+          {activePage === 'settlements' && (
+            <Settlements 
+              analytics={analytics} 
+              token={token} 
+              onRefresh={() => fetchAnalytics(token)} 
+              isOffline={isOffline} 
+              user={user} 
+              room={room} 
+              expenses={expenses}
             />
           )}
         </main>
