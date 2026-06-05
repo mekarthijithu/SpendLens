@@ -26,11 +26,11 @@ def seed_database():
     
     # 2. Create Users
     users_data = [
-        {"name": "Akhil", "email": "akhil@spendlens.com", "upi_id": "akhil@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Akhil"},
-        {"name": "Vikas", "email": "vikas@spendlens.com", "upi_id": "vikas@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Vikas"},
-        {"name": "Jithu", "email": "jithu@spendlens.com", "upi_id": "jithu@oksbi", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jithu"},
-        {"name": "Bhanu", "email": "bhanu@spendlens.com", "upi_id": "bhanu@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Bhanu"},
-        {"name": "Jagan", "email": "jagan@spendlens.com", "upi_id": "jagan@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jagan"}
+        {"name": "Akhil", "email": "akhil@bachelorhome.com", "upi_id": "akhil@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Akhil"},
+        {"name": "Vikas", "email": "vikas@bachelorhome.com", "upi_id": "vikas@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Vikas"},
+        {"name": "Jithu", "email": "jithu@bachelorhome.com", "upi_id": "jithu@oksbi", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jithu"},
+        {"name": "Bhanu", "email": "bhanu@bachelorhome.com", "upi_id": "bhanu@okaxis", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Bhanu"},
+        {"name": "Jagan", "email": "jagan@bachelorhome.com", "upi_id": "jagan@okicici", "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=Jagan"}
     ]
     
     users = []
@@ -227,13 +227,13 @@ def seed_database():
         {
             "user_id": users[0].id,
             "type": "room",
-            "message": "Welcome to SpendLens! You created the room 'B6'. Share your invite code LENS99 to invite housemates.",
+            "message": "Welcome to Bachelor Home! You created the room 'B6'. Share your invite code LENS99 to invite housemates.",
             "read": True
         },
         {
             "user_id": users[0].id,
             "type": "room",
-            "message": "Vikas has joined your SpendLens room!",
+            "message": "Vikas has joined your Bachelor Home room!",
             "read": True
         },
         {

@@ -447,5 +447,50 @@ button {
   .mobile-nav-tabs {
     display: flex !important;
   }
+  .header-invite-code {
+    display: none !important;
+  }
+  .header-avatars {
+    display: none !important;
+  }
 }
+
+/* Responsive Grid Utilities */
+.grid-2-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.grid-3-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .grid-2-col,
+  .grid-3-col {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .custom-category-field {
+    grid-column: span 1 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .csv-upload-form {
+    flex-direction: column !important;
+  }
+  
+  .csv-upload-form input {
+    width: 100% !important;
+  }
+  
+  .csv-upload-form button {
+    width: 100% !important;
+  }
+}
+
 

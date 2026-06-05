@@ -197,7 +197,7 @@ function Settlements({ analytics, token, onRefresh, isOffline, room, expenses })
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '24px' }} className="responsive-grid-pool">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* Left Card: Pool Ledger Table */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px', overflow: 'hidden' }}>

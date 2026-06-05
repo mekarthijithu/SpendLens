@@ -103,7 +103,7 @@ function Analytics({ analytics, token }) {
       <div className="card" style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
           <Sparkles size={20} style={{ color: 'var(--color-primary)', animation: 'float 3s ease-in-out infinite' }} />
-          <h3 style={{ fontSize: '18px' }}>SpendLens Predictive Intelligence</h3>
+          <h3 style={{ fontSize: '18px' }}>Bachelor Home Predictive Intelligence</h3>
         </div>
         
         <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '16px' }}>

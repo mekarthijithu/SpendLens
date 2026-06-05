@@ -9,11 +9,11 @@ import Settlements from './pages/Settlements';
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const MEMBERS = [
-  { name: 'Akhil', email: 'akhil@spendlens.com', color: '#10b981', emoji: '🟢' },
-  { name: 'Vikas', email: 'vikas@spendlens.com', color: '#6366f1', emoji: '🔵' },
-  { name: 'Jithu', email: 'jithu@spendlens.com', color: '#f59e0b', emoji: '🟡' },
-  { name: 'Bhanu', email: 'bhanu@spendlens.com', color: '#ef4444', emoji: '🔴' },
-  { name: 'Jagan', email: 'jagan@spendlens.com', color: '#0ea5e9', emoji: '🔷' },
+  { name: 'Akhil', email: 'akhil@bachelorhome.com', color: '#10b981', emoji: '🟢' },
+  { name: 'Vikas', email: 'vikas@bachelorhome.com', color: '#6366f1', emoji: '🔵' },
+  { name: 'Jithu', email: 'jithu@bachelorhome.com', color: '#f59e0b', emoji: '🟡' },
+  { name: 'Bhanu', email: 'bhanu@bachelorhome.com', color: '#ef4444', emoji: '🔴' },
+  { name: 'Jagan', email: 'jagan@bachelorhome.com', color: '#0ea5e9', emoji: '🔷' },
 ];
 
 const MOCK_ANALYTICS = null;
@@ -32,7 +32,7 @@ function App() {
     setUser({
       id: 1,
       name: "Jithendra Kumar (Offline)",
-      email: "jith@spendlens.com",
+      email: "jith@bachelorhome.com",
       upi_id: "jith@okaxis",
       avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Jithendra",
       room_id: 1
@@ -356,7 +356,7 @@ function App() {
         <div className="animate-fade" style={{ zIndex: 1, textAlign: 'center', width: '100%', maxWidth: '480px', padding: '0 24px' }}>
           <div style={{ marginBottom: '28px' }}>
             <span style={{ fontSize: '56px', display: 'inline-block', animation: 'float 3s ease-in-out infinite' }}>🔎</span>
-            <h1 className="text-gradient" style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-display)', letterSpacing: '-0.03em', marginTop: '12px' }}>SpendLens</h1>
+            <h1 className="text-gradient" style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-display)', letterSpacing: '-0.03em', marginTop: '12px' }}>Bachelor Home</h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '8px' }}>Household expense intelligence</p>
           </div>
 
@@ -366,13 +366,13 @@ function App() {
             </div>
             
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
-              {serverStatus === 'checking' ? 'Connecting to services...' : 'Waking up SpendLens...'}
+              {serverStatus === 'checking' ? 'Connecting to services...' : 'Waking up Bachelor Home...'}
             </h3>
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.5', margin: 0 }}>
               {serverStatus === 'checking' 
-                ? 'Initializing a secure connection with SpendLens API...'
-                : "SpendLens is hosted on Render's free tier and goes to sleep after inactivity. Waking it up usually takes 30-50 seconds. We'll load automatically when ready!"}
+                ? 'Initializing a secure connection with Bachelor Home API...'
+                : "Bachelor Home is hosted on Render's free tier and goes to sleep after inactivity. Waking it up usually takes 30-50 seconds. We'll load automatically when ready!"}
             </p>
 
             {serverStatus === 'waking' && (
@@ -415,7 +415,7 @@ function App() {
           {/* Logo & Title */}
           <div style={{ marginBottom: '12px' }}>
             <span style={{ fontSize: '48px', display: 'block', marginBottom: '8px' }}>🔎</span>
-            <h1 className="text-gradient" style={{ fontSize: '42px', fontWeight: 800, fontFamily: 'var(--font-display)', letterSpacing: '-0.03em' }}>SpendLens</h1>
+            <h1 className="text-gradient" style={{ fontSize: '42px', fontWeight: 800, fontFamily: 'var(--font-display)', letterSpacing: '-0.03em' }}>Bachelor Home</h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginTop: '6px', fontFamily: 'var(--font-body)' }}>Collaborative expense intelligence for your household</p>
           </div>
 
@@ -510,7 +510,7 @@ function App() {
           )}
 
           {/* Footer */}
-          <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '32px', opacity: 0.6 }}>SpendLens Room Intel v1.1 &middot; Production Build</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '32px', opacity: 0.6 }}>Bachelor Home Room Intel v1.1 &middot; Production Build</p>
         </div>
 
         <style>{`
@@ -529,7 +529,7 @@ function App() {
         <div className="blur-circle circle-2"></div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '3px solid rgba(99, 102, 241, 0.2)', borderTopColor: 'var(--color-secondary)', animation: 'spin 1s linear infinite', margin: '0 auto 20px auto' }}></div>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-display)', fontSize: '16px' }}>Loading SpendLens...</p>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-display)', fontSize: '16px' }}>Loading Bachelor Home...</p>
         </div>
         <style>{`
           @keyframes spin { to { transform: rotate(360deg); } }
@@ -561,7 +561,7 @@ function App() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '36px', padding: '0 8px' }}>
           <span style={{ fontSize: '24px' }}>🔎</span>
           <div>
-            <h2 className="text-gradient" style={{ fontSize: '22px', fontWeight: 800, fontFamily: 'var(--font-display)' }}>SpendLens</h2>
+            <h2 className="text-gradient" style={{ fontSize: '22px', fontWeight: 800, fontFamily: 'var(--font-display)' }}>Bachelor Home</h2>
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Room Intel v1.1</span>
           </div>
         </div>
@@ -633,6 +633,35 @@ function App() {
           </button>
         </nav>
 
+         {/* Room Info Section (Invite Code & Members list) for mobile/sidebar */}
+        {room && (
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', marginBottom: '8px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Room Invite Code</span>
+            </div>
+            <div 
+              onClick={copyInvite}
+              style={{ 
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.25)', 
+                padding: '8px 12px', borderRadius: 'var(--radius-sm)', fontSize: '13px', color: 'var(--color-secondary)', cursor: 'pointer', transition: 'all var(--transition-fast)'
+              }}
+            >
+              <strong style={{ letterSpacing: '0.05em' }}>{room.invite_code}</strong>
+              {copied ? <Check size={12} style={{ color: 'var(--color-primary)' }} /> : <Copy size={12} />}
+            </div>
+
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '6px' }}>Room Members ({room.members?.length || 0})</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '80px', overflowY: 'auto' }}>
+              {(room.members || []).map(m => (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', padding: '4px 8px', borderRadius: '12px' }} title={m.name}>
+                  <img src={m.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${m.name}`} alt={m.name} style={{ width: '14px', height: '14px', borderRadius: '50%' }} />
+                  <span style={{ fontSize: '10px', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{m.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* User profile footer in sidebar */}
         {user && (
           <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -684,6 +713,7 @@ function App() {
             <h1 style={{ fontSize: '20px', fontFamily: 'var(--font-display)' }}>{room?.name || 'Household'}</h1>
             {room && (
               <div 
+                className="header-invite-code"
                 onClick={copyInvite}
                 style={{ 
                   display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.25)', 
@@ -740,7 +770,7 @@ function App() {
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="header-avatars" style={{ display: 'flex', alignItems: 'center' }}>
               {(room?.members || []).slice(0, 3).map((m, idx) => (
                 <img 
                    key={m.id} 

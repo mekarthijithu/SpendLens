@@ -351,7 +351,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
           <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>Log New Expense</h3>
           
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="grid-2-col">
               <div>
                 <label>Amount (₹) *</label>
                 <input 
@@ -373,7 +373,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                 </select>
               </div>
               {category === 'other' && (
-                <div style={{ gridColumn: 'span 2', marginTop: '4px' }}>
+                <div className="custom-category-field" style={{ gridColumn: 'span 2', marginTop: '4px' }}>
                   <label>Custom Category Name *</label>
                   <input 
                     type="text" 
@@ -386,7 +386,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+            <div className="grid-3-col">
               <div>
                 <label>Vendor / Payee</label>
                 <input 
@@ -545,7 +545,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
             <h3 style={{ fontSize: '15px' }}>Bulk Import CSV</h3>
           </div>
           
-          <form onSubmit={handleCsvUpload} style={{ display: 'flex', gap: '10px' }}>
+          <form onSubmit={handleCsvUpload} className="csv-upload-form" style={{ display: 'flex', gap: '10px' }}>
             <input 
               type="file" 
               id="csv-input"
