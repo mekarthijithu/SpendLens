@@ -543,7 +543,7 @@ function App() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="app-container" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div className="app-container" style={{ display: 'flex', height: '100dvh', width: '100vw', maxWidth: '100%', background: 'var(--bg-primary)', overflow: 'hidden' }}>
       {/* Background Orbs */}
       <div className="blur-circle circle-1" style={{ opacity: 0.08 }}></div>
       <div className="blur-circle circle-2" style={{ opacity: 0.08 }}></div>
@@ -804,14 +804,15 @@ function App() {
           background: 'rgba(15, 23, 42, 0.98)',
           backdropFilter: 'blur(12px)',
           borderTop: '1px solid var(--border-color)',
-          padding: '6px 10px',
-          gap: '4px',
+          padding: '6px 4px',
+          gap: '2px',
           position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
+          width: '100vw',
+          maxWidth: '100%',
           zIndex: 1000,
-          width: '100%',
           boxSizing: 'border-box',
           boxShadow: '0 -4px 16px rgba(0,0,0,0.45)',
           justifyContent: 'space-around',
@@ -820,9 +821,9 @@ function App() {
           {[
             { id: 'dashboard', label: 'Dashboard', icon: '📊' },
             { id: 'expenses', label: 'Expenses', icon: '📄' },
-            { id: 'analytics', label: 'Intelligence', icon: '💡' },
+            { id: 'analytics', label: 'Intel', icon: '💡' },
             { id: 'budgetPool', label: 'Pool', icon: '🏦' },
-            { id: 'settlements', label: 'Settlement', icon: '🤝' }
+            { id: 'settlements', label: 'Settle', icon: '🤝' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -831,7 +832,7 @@ function App() {
                 background: 'transparent',
                 border: 'none',
                 color: activePage === tab.id ? 'var(--color-secondary)' : 'var(--text-secondary)',
-                padding: '6px 12px',
+                padding: '6px 2px',
                 fontSize: '10px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -845,15 +846,22 @@ function App() {
                 minWidth: 0
               }}
             >
-              <span style={{ fontSize: '20px' }}>{tab.icon}</span>
-              <span style={{ fontWeight: activePage === tab.id ? 'bold' : '500' }}>{tab.label}</span>
+              <span style={{ fontSize: '18px' }}>{tab.icon}</span>
+              <span style={{ 
+                fontWeight: activePage === tab.id ? 'bold' : '500',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                width: '100%',
+                textAlign: 'center'
+              }}>{tab.label}</span>
             </button>
           ))}
         </div>
 
 
         {/* Dynamic Page Views */}
-        <main className="app-main-content" style={{ flex: 1, overflowY: 'auto' }}>
+        <main className="app-main-content" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {activePage === 'dashboard' && <Dashboard analytics={analytics} token={token} user={user} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} />}
           {activePage === 'expenses' && <ExpenseLog token={token} room={room} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} user={user} expenses={expenses} setExpenses={setExpenses} fetchExpenses={fetchExpenses} />}
           {activePage === 'analytics' && <Analytics analytics={analytics} token={token} isOffline={isOffline} expenses={expenses} room={room} />}

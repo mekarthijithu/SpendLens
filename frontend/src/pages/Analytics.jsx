@@ -222,8 +222,8 @@ function Analytics({ analytics, token, isOffline, expenses, room }) {
       }
     };
     
-    const goalData = database[goal] || database.balanced;
-    const details = goalData[status] || goalData.balanced;
+    const goalData = database[dietGoal] || database.balanced;
+    const details = goalData[status] || goalData.healthy;
     
     return {
       remaining,
