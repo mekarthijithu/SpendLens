@@ -66,7 +66,7 @@ def seed_database():
         {"category": "groceries", "limit": 6000.0},
         {"category": "eggs", "limit": 2000.0},
         {"category": "water", "limit": 1000.0},
-        {"category": "rent", "limit": 20000.0},
+        {"category": "room rent", "limit": 20000.0},
         {"category": "household supplies", "limit": 1500.0}
     ]
     
@@ -90,7 +90,7 @@ def seed_database():
         "groceries": ["D-Mart", "Supermarket", "BigBasket", "Kirana Shop"],
         "eggs": ["Egg Store", "Local Grocery", "Zepto", "Blinkit"],
         "water": ["Bisleri Distributor", "Local Shop", "Can Vendor"],
-        "rent": ["House Owner Trust"],
+        "room rent": ["House Owner Trust"],
         "household supplies": ["Amazon", "D-Mart", "Blinkit"]
     }
     
@@ -112,13 +112,13 @@ def seed_database():
             user_id=users[1 if month_offset % 2 == 0 else 2].id,
             room_id=room.id,
             amount=20000.0,
-            category="rent",
+            category="room rent",
             vendor="Landlord",
             payment_mode="Bank Transfer",
             date=f"{month_str}-01",
             is_shared=True,
-            tags=["rent", "fixed-cost"],
-            notes=f"Monthly house rent for {month_str}",
+            tags=["room rent", "fixed-cost"],
+            notes=f"Monthly room rent for {month_str}",
             delivery_type="offline"
         ))
         expense_count += 1
@@ -127,7 +127,7 @@ def seed_database():
         
         # Seed daily/weekly random expenses
         for category in categories:
-            if category in ["rent"]:
+            if category in ["room rent"]:
                 continue
                 
             # Determine how many times we spend in this category per month

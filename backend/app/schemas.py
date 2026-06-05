@@ -71,6 +71,7 @@ class ExpenseBase(BaseModel):
     tags: List[str] = []
     notes: Optional[str] = None
     delivery_type: Optional[str] = "offline"
+    receipt_url: Optional[str] = None
 
 class ExpenseCreate(ExpenseBase):
     pass
@@ -85,6 +86,7 @@ class ExpenseUpdate(BaseModel):
     tags: Optional[List[str]] = None
     notes: Optional[str] = None
     delivery_type: Optional[str] = None
+    receipt_url: Optional[str] = None
 
 class ExpenseResponse(ExpenseBase):
     id: int

@@ -1,8 +1,15 @@
 import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from .database import engine, Base
 from .routers import auth, expenses, budgets, analytics, notifications
+
+# Mount static files for receipt uploads
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+uploads_dir = os.path.join(base_dir, "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
+
 
 # Initialize tables
 Base.metadata.create_all(bind=engine)
@@ -34,6 +41,9 @@ app = FastAPI(
     description="Financial intelligence and collaborative expense tracking for rooms/households.",
     version="1.1.0"
 )
+
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
 
 # CORS configuration to allow frontend access
 origins = [

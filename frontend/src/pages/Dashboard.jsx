@@ -87,7 +87,7 @@ function Dashboard({ analytics, token, user, onRefresh }) {
       eggs: 2000,
       water: 1000,
       utilities: 2500,
-      rent: 20000,
+      "room rent": 20000,
       "household supplies": 1500,
       "personal care": 1200,
       entertainment: 4000,

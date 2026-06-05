@@ -8,6 +8,8 @@ import re
 import random
 from ..database import get_db
 from .. import models, schemas, auth, ml
+import os
+import uuid
 
 router = APIRouter(prefix="/api/expenses", tags=["Expenses"])
 
@@ -48,7 +50,8 @@ def create_expense(expense_data: schemas.ExpenseCreate, current_user: models.Use
         is_shared=expense_data.is_shared,
         tags=expense_data.tags,
         notes=expense_data.notes,
-        delivery_type=expense_data.delivery_type
+        delivery_type=expense_data.delivery_type,
+        receipt_url=expense_data.receipt_url
     )
     db.add(db_expense)
     db.commit()
@@ -164,6 +167,31 @@ def delete_expense(expense_id: int, current_user: models.User = Depends(auth.get
     db.delete(db_expense)
     db.commit()
     return None
+
+@router.post("/upload-receipt")
+def upload_receipt(file: UploadFile = File(...)):
+    """
+    Saves an uploaded receipt (Image or PDF) to the local backend/uploads directory.
+    Returns the public static path of the saved file.
+    """
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    uploads_dir = os.path.join(base_dir, "uploads")
+    os.makedirs(uploads_dir, exist_ok=True)
+    
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in [".jpg", ".jpeg", ".png", ".webp", ".pdf"]:
+        raise HTTPException(status_code=400, detail="Only images (jpg, jpeg, png, webp) and PDFs are allowed")
+        
+    filename = f"{uuid.uuid4()}{file_ext}"
+    filepath = os.path.join(uploads_dir, filename)
+    
+    try:
+        with open(filepath, "wb") as buffer:
+            buffer.write(file.file.read())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save receipt: {str(e)}")
+        
+    return {"receipt_url": f"/uploads/{filename}"}
 
 @router.post("/ocr", response_model=schemas.OCRResponse)
 def ocr_receipt(file: UploadFile = File(...)):

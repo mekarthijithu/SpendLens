@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Filter, Lock } from 'lucide-react';
+import { Sparkles, Upload, FileSpreadsheet, Trash2, HelpCircle, Eye, Search, Filter, Lock, FileText, Image, X } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const DEFAULT_CATEGORIES = [
-  'vegetables', 'non-veg', 'eggs', 'water', 'rent', 'household supplies'
+  'vegetables', 'non-veg', 'eggs', 'water', 'room rent', 'household supplies'
 ];
 
 const getLearnedCategories = (expensesList) => {
   const customCounts = {};
   (expensesList || []).forEach(exp => {
     const cat = (exp.category || '').toLowerCase().trim();
-    if (cat && !['vegetables', 'non-veg', 'eggs', 'water', 'rent', 'household supplies', 'other'].includes(cat)) {
+    if (cat && !['vegetables', 'non-veg', 'eggs', 'water', 'room rent', 'household supplies', 'other'].includes(cat)) {
       if (!customCounts[cat]) {
         customCounts[cat] = {
           count: 0,
@@ -58,6 +58,15 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
   const [isShared, setIsShared] = useState(true);
   const [tags, setTags] = useState('');
   const [notes, setNotes] = useState('');
+  
+  // Receipt uploads & view lightbox
+  const [receiptUrl, setReceiptUrl] = useState('');
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptUploadError, setReceiptUploadError] = useState('');
+  const [activeReceiptUrl, setActiveReceiptUrl] = useState(null);
+  
+  // Month selector for filter/export
+  const [filterMonth, setFilterMonth] = useState(new Date().toISOString().slice(0, 7));
   
   // OCR & Import State
   const [ocrLoading, setOcrLoading] = useState(false);
@@ -124,7 +133,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         date,
         is_shared: isShared,
         tags: tagList,
-        notes
+        notes,
+        receipt_url: receiptUrl
       };
       setExpenses(prev => [newExpense, ...prev]);
       setAmount('');
@@ -135,6 +145,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
       setCategory('vegetables');
       setDeliveryType('offline');
       setIsShared(true);
+      setReceiptUrl('');
+      setReceiptUploadError('');
       setSubmitting(false);
       return;
     }
@@ -155,7 +167,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
           date,
           is_shared: isShared,
           tags: tagList,
-          notes
+          notes,
+          receipt_url: receiptUrl
         })
       });
 
@@ -169,6 +182,8 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         setCategory('vegetables');
         setDeliveryType('offline');
         setIsShared(true);
+        setReceiptUrl('');
+        setReceiptUploadError('');
         handleFetchExpenses();
         onRefresh();
       }
@@ -236,6 +251,46 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
     }
   };
 
+  // Receipt File upload handler (manual entry)
+  const handleReceiptUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingReceipt(true);
+    setReceiptUploadError('');
+    
+    if (isOffline) {
+      setTimeout(() => {
+        setReceiptUrl('https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?w=500&auto=format&fit=crop&q=60');
+        setUploadingReceipt(false);
+      }, 800);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/expenses/upload-receipt`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setReceiptUrl(data.receipt_url);
+      } else {
+        const errorData = await res.json();
+        setReceiptUploadError(errorData.detail || 'Failed to upload receipt');
+      }
+    } catch (err) {
+      setReceiptUploadError('Connection error during upload');
+      console.error(err);
+    } finally {
+      setUploadingReceipt(false);
+    }
+  };
+
   // CSV Import handler
   const handleCsvUpload = async (e) => {
     e.preventDefault();
@@ -280,8 +335,9 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
       
     const matchesCategory = filterCategory === '' || exp.category === filterCategory;
     const matchesUser = filterUser === '' || String(exp.user_id) === filterUser;
+    const matchesMonth = filterMonth === '' || (exp.date && exp.date.startsWith(filterMonth));
     
-    return matchesSearch && matchesCategory && matchesUser;
+    return matchesSearch && matchesCategory && matchesUser && matchesMonth;
   });
 
   return (
@@ -406,6 +462,48 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               </div>
             </div>
 
+            {/* Optional Receipt Attachment */}
+            <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '12px', marginTop: '4px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: 600 }}>Attach Receipt (Image or PDF - Optional)</label>
+              
+              {!receiptUrl ? (
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '42px', border: '1px dashed rgba(255,255,255,0.15)', borderRadius: '4px', background: 'rgba(0,0,0,0.1)' }}>
+                  {uploadingReceipt ? (
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Uploading receipt file...</span>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}><Upload size={14} /> Choose receipt photo or PDF</span>
+                      <input 
+                        type="file" 
+                        accept="image/*,application/pdf"
+                        onChange={handleReceiptUpload}
+                        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, cursor: 'pointer' }}
+                      />
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', padding: '8px 12px', borderRadius: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: 'var(--color-primary)' }}>📄</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px' }}>
+                      {receiptUrl.split('/').pop()}
+                    </span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setReceiptUrl('')} 
+                    style={{ background: 'transparent', border: 'none', color: 'var(--color-danger)', fontSize: '11px', cursor: 'pointer', padding: '2px 6px' }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+              {receiptUploadError && (
+                <span style={{ color: 'var(--color-danger)', fontSize: '11px', marginTop: '6px', display: 'block' }}>{receiptUploadError}</span>
+              )}
+            </div>
+
             <button type="submit" className="btn-primary" disabled={submitting} style={{ marginTop: '6px' }}>
               {submitting ? 'Logging Expense...' : 'Log Expense'}
             </button>
@@ -479,7 +577,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         </div>
 
         {/* Filter controls */}
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', background: 'rgba(0,0,0,0.1)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', background: 'rgba(0,0,0,0.1)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '180px', position: 'relative', display: 'flex', alignItems: 'center' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)' }} />
             <input 
@@ -490,6 +588,14 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               style={{ paddingLeft: '36px' }}
             />
           </div>
+
+          <input 
+            type="month" 
+            value={filterMonth} 
+            onChange={(e) => setFilterMonth(e.target.value)}
+            style={{ width: 'auto', minWidth: '150px' }}
+            title="Filter by Month"
+          />
 
           <select 
             value={filterCategory} 
@@ -512,6 +618,21 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (isOffline) {
+                alert("Offline mode: cannot download files from backend.");
+                return;
+              }
+              window.open(`${API_BASE}/api/analytics/export/excel?token=${token}&month=${filterMonth}`, '_blank');
+            }}
+            className="btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', fontSize: '13px' }}
+          >
+            <FileSpreadsheet size={16} /> Export Excel
+          </button>
         </div>
 
         {/* Table Container */}
@@ -532,6 +653,7 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                   <th style={{ padding: '12px 8px' }}>Mode</th>
                   <th style={{ padding: '12px 8px' }}>Type</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>Shared?</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>Receipt</th>
                   <th style={{ padding: '12px 8px', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -555,6 +677,25 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
                     </td>
                     <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                       {exp.is_shared ? '✅' : '👤'}
+                    </td>
+                    <td style={{ padding: '12px 8px', textAlign: 'center' }}>
+                      {exp.receipt_url ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const fullUrl = exp.receipt_url.startsWith('http') 
+                              ? exp.receipt_url 
+                              : `${API_BASE}${exp.receipt_url}`;
+                            setActiveReceiptUrl(fullUrl);
+                          }}
+                          className="btn-secondary"
+                          style={{ padding: '4px 8px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px', margin: '0 auto' }}
+                        >
+                          <Eye size={12} /> View
+                        </button>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)' }}>—</span>
+                      )}
                     </td>
                     <td style={{ padding: '12px 8px', textAlign: 'right' }}>
                       {isOffline || String(exp.user_id) === String(user?.id) ? (
@@ -590,8 +731,96 @@ function ExpenseLog({ token, room, onRefresh, isOffline, user, expenses, setExpe
         }
       `}</style>
 
+      {/* Lightbox Modal for Receipt Viewing */}
+      {activeReceiptUrl && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '24px'
+        }} onClick={() => setActiveReceiptUrl(null)}>
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '640px',
+            position: 'relative',
+            boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600 }}>Expense Receipt</h3>
+              <button 
+                onClick={() => setActiveReceiptUrl(null)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div style={{ 
+              background: '#090d16', 
+              borderRadius: 'var(--radius-sm)', 
+              minHeight: '300px', 
+              maxHeight: '70vh', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              overflow: 'hidden',
+              border: '1px solid rgba(255,255,255,0.03)'
+            }}>
+              {activeReceiptUrl.toLowerCase().endsWith('.pdf') ? (
+                <iframe 
+                  src={activeReceiptUrl} 
+                  style={{ width: '100%', height: '500px', border: 'none' }}
+                  title="Receipt PDF"
+                />
+              ) : (
+                <img 
+                  src={activeReceiptUrl} 
+                  alt="Receipt Scan" 
+                  style={{ maxWidth: '100%', maxHeight: '500px', objectFit: 'contain' }}
+                />
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <a 
+                href={activeReceiptUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn-secondary" 
+                style={{ padding: '8px 16px', fontSize: '13px', textDecoration: 'none', textAlign: 'center' }}
+              >
+                Open in new tab
+              </a>
+              <button 
+                onClick={() => setActiveReceiptUrl(null)} 
+                className="btn-primary" 
+                style={{ padding: '8px 16px', fontSize: '13px' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
 
 export default ExpenseLog;
+

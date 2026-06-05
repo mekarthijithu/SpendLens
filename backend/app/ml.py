@@ -101,6 +101,9 @@ def generate_predictions(room_id: int, db: Session) -> List[Dict[str, Any]]:
     
     categories = df["category"].unique()
     for cat in categories:
+        if cat.lower().strip() in ['rent', 'room rent']:
+            continue
+
         cat_data = monthly_agg[monthly_agg["category"] == cat].sort_values("month")
         
         # Need at least some historical points. If we only have 1 or 2, we do average + random trend.

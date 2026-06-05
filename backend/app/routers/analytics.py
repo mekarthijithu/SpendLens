@@ -154,7 +154,8 @@ def get_analytics_summary(month: Optional[str] = None, current_user: models.User
     # Compute active categories
     active_cats = list(category_totals.keys())
     if not active_cats:
-        active_cats = ["groceries", "online delivery", "utilities", "rent", "milk", "vegetables", "miscellaneous"]
+        active_cats = ["groceries", "online delivery", "utilities", "room rent", "milk", "vegetables", "miscellaneous"]
+
         
     # Get last 6 months list (excluding next month)
     months_list = []

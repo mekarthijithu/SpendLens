@@ -22,6 +22,7 @@ const MOCK_NOTIFICATIONS = [];
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [isOffline, setIsOffline] = useState(false);
+  const [serverStatus, setServerStatus] = useState('checking'); // 'checking' | 'online' | 'waking'
 
   const enableOfflineMode = () => {
     setIsOffline(true);
@@ -151,12 +152,52 @@ function App() {
     }
   };
 
-  // On mount, restore session if token already exists
+  // On mount, restore session and ping server
   useEffect(() => {
     if (token === 'mock-token') {
+      setServerStatus('online');
       enableOfflineMode();
       fetchExpenses('mock-token');
+      return;
     }
+
+    const pingServer = async () => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const res = await fetch(`${API_BASE}/`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'online') {
+            setServerStatus('online');
+            return true;
+          }
+        }
+      } catch (err) {
+        console.log("Waiting for backend server to wake up...", err);
+      }
+      return false;
+    };
+
+    let intervalId;
+    const initConnection = async () => {
+      const ok = await pingServer();
+      if (!ok) {
+        setServerStatus('waking');
+        intervalId = setInterval(async () => {
+          const okRetry = await pingServer();
+          if (okRetry) {
+            clearInterval(intervalId);
+          }
+        }, 3000);
+      }
+    };
+    
+    initConnection();
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
@@ -302,6 +343,64 @@ function App() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Waking up server loading screen
+  if (serverStatus === 'checking' || serverStatus === 'waking') {
+    return (
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)', position: 'relative', overflow: 'hidden' }}>
+        <div className="blur-circle circle-1" style={{ width: '600px', height: '600px', top: '-200px', right: '-100px', opacity: 0.18 }}></div>
+        <div className="blur-circle circle-2" style={{ width: '700px', height: '700px', bottom: '-250px', left: '-200px', opacity: 0.15 }}></div>
+        <div className="blur-circle" style={{ width: '300px', height: '300px', background: 'var(--color-secondary)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.06, filter: 'blur(120px)' }}></div>
+
+        <div className="animate-fade" style={{ zIndex: 1, textAlign: 'center', width: '100%', maxWidth: '480px', padding: '0 24px' }}>
+          <div style={{ marginBottom: '28px' }}>
+            <span style={{ fontSize: '56px', display: 'inline-block', animation: 'float 3s ease-in-out infinite' }}>🔎</span>
+            <h1 className="text-gradient" style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-display)', letterSpacing: '-0.03em', marginTop: '12px' }}>SpendLens</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '8px' }}>Household expense intelligence</p>
+          </div>
+
+          <div className="card animate-pulse-glow" style={{ padding: '24px', border: '1px solid var(--border-glow)', background: 'rgba(255, 255, 255, 0.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '3px solid rgba(99, 102, 241, 0.1)', borderTopColor: 'var(--color-secondary)', animation: 'spin 1s linear infinite' }}></div>
+            </div>
+            
+            <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
+              {serverStatus === 'checking' ? 'Connecting to services...' : 'Waking up SpendLens...'}
+            </h3>
+            
+            <p style={{ color: 'var(--text-secondary)', fontSize: '12.5px', lineHeight: '1.5', margin: 0 }}>
+              {serverStatus === 'checking' 
+                ? 'Initializing a secure connection with SpendLens API...'
+                : "SpendLens is hosted on Render's free tier and goes to sleep after inactivity. Waking it up usually takes 30-50 seconds. We'll load automatically when ready!"}
+            </p>
+
+            {serverStatus === 'waking' && (
+              <div style={{ marginTop: '20px' }}>
+                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden', position: 'relative' }}>
+                  <div className="loading-progress" style={{ height: '100%', background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))', borderRadius: '2px', width: '70%', animation: 'loading-bar 30s linear infinite' }}></div>
+                </div>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px', display: 'block' }}>Retrying connection in background...</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes spin { to { transform: rotate(360deg); } }
+          @keyframes float { 
+            0% { transform: translateY(0px); } 
+            50% { transform: translateY(-10px); } 
+            100% { transform: translateY(0px); } 
+          }
+          @keyframes loading-bar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 95%; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   // Render Login screen with member selection
   if (!token) {
