@@ -494,3 +494,52 @@ button {
 }
 
 
+/* Layout Spacings */
+.app-header {
+  padding: 0 24px;
+}
+
+.app-main-content {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px !important;
+  }
+  
+  .app-main-content {
+    padding: 16px !important;
+    padding-bottom: 95px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 16px !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  table th, table td {
+    padding: 8px 4px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .goal-selector-buttons {
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+  }
+  
+  .goal-selector-buttons button {
+    flex: 1 !important;
+    text-align: center !important;
+    font-size: 10px !important;
+    padding: 6px 4px !important;
+  }
+}
+
+
+

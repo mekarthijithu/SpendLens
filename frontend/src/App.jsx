@@ -856,7 +856,7 @@ function App() {
         <main className="app-main-content" style={{ flex: 1, overflowY: 'auto' }}>
           {activePage === 'dashboard' && <Dashboard analytics={analytics} token={token} user={user} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} />}
           {activePage === 'expenses' && <ExpenseLog token={token} room={room} onRefresh={() => fetchAnalytics(token)} isOffline={isOffline} user={user} expenses={expenses} setExpenses={setExpenses} fetchExpenses={fetchExpenses} />}
-          {activePage === 'analytics' && <Analytics analytics={analytics} token={token} isOffline={isOffline} />}
+          {activePage === 'analytics' && <Analytics analytics={analytics} token={token} isOffline={isOffline} expenses={expenses} room={room} />}
           {activePage === 'budgetPool' && (
             <BudgetPool 
               expenses={expenses} 
